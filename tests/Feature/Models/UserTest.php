@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Models;
 
+use App\Models\Post;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -20,6 +21,18 @@ class UserTest extends TestCase
         User::create($data);
 
         $this->assertDatabaseHas('users', $data);
+
+    }
+    public function test_user_relationship_with_post()
+    {
+        $count=rand(0,10);
+
+        $user = User::factory()
+            ->hasPosts($count)
+            ->create();
+
+        $this->assertCount($count,$user->posts);
+        $this->assertTrue($user->posts->first() instanceof Post);
 
     }
 }

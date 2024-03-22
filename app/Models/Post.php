@@ -8,9 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
     use HasFactory;
-    protected $fillable=[
+
+    protected $fillable = [
+        'user_id',
         'title',
         'description',
         'image',
     ];
+
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class);
+
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+
+    }
 }
