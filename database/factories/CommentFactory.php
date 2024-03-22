@@ -2,10 +2,14 @@
 
 namespace Database\Factories;
 
+use App\Models\Model;
+use App\Models\Post;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
+ * @extends Factory<Model>
  */
 class CommentFactory extends Factory
 {
@@ -17,7 +21,10 @@ class CommentFactory extends Factory
     public function definition(): array
     {
         return [
-            'text'=>$this->faker->text
+            'commentable_id' => Post::factory(),
+            'commentable_type' => Post::class,
+            'text' => $this->faker->text,
+            'user_id' => User::factory()
         ];
     }
 }
