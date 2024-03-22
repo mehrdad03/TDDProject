@@ -2,16 +2,22 @@
 
 namespace Tests\Feature\Models;
 
+use App\Models\ModelHelperTesting;
 use App\Models\Post;
 use App\Models\Tag;
-use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class TagTest extends TestCase
 {
 
-    use RefreshDatabase;
+    use RefreshDatabase, ModelHelperTesting;
+
+    protected function model(): Model
+    {
+        return new Tag();
+    }
 
     public function test_insert_data(): void
     {

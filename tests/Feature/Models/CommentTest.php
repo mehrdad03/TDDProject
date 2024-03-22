@@ -3,25 +3,22 @@
 namespace Tests\Feature\Models;
 
 use App\Models\Comment;
+use App\Models\ModelHelperTesting;
 use App\Models\Post;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class CommentTest extends TestCase
 {
 
-    use RefreshDatabase;
+    use RefreshDatabase, ModelHelperTesting;
 
-    public function test_insert_data(): void
+    protected function model(): Model
     {
-        $data = Comment::factory()->make()->toArray();
-
-        Comment::query()->create($data);
-
-        $this->assertDatabaseHas('comments', $data);
+        return new Comment();
     }
-
     public function test_comment_relationship_with_post()
     {
         $comment = Comment::factory()
