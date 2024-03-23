@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 
 class SingleController extends Controller
@@ -15,7 +17,17 @@ class SingleController extends Controller
             ->paginate(15);
         //dd($comments->all());
 
-        return view('single', compact('post','comments'));
+        return view('single', compact('post', 'comments'));
+
+    }
+
+    public function comment(Request $request, Post $post)
+    {
+        $post->comments()->create([
+            'user_id'=>Auth::id(),
+            'text'=>$request->input('text'),
+        ]);
+        return redirect()->route('single',$post->id);
 
     }
 }
