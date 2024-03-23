@@ -20,9 +20,9 @@ class HomeControllerTest extends TestCase
         $response = $this->get(route('home'));
 
         $response->assertStatus(200);
-        // test view with home name
+        // view test with home name
         $response->assertViewIs('home');
-        //test data with post key
+        //pass data test with post key
         $response->assertViewHas('posts', Post::query()->latest()->paginate(15));
 
     }
