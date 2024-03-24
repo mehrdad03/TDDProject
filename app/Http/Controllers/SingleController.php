@@ -24,10 +24,10 @@ class SingleController extends Controller
     public function comment(Request $request, Post $post)
     {
         $post->comments()->create([
-            'user_id'=>Auth::id(),
-            'text'=>$request->input('text'),
+            'user_id' => Auth::id(),
+            'text' => $request->input('text'),
         ]);
-        return redirect()->route('single',$post->id);
+        return ['created' => true];
 
     }
 }

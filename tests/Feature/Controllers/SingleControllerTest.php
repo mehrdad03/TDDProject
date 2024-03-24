@@ -44,15 +44,22 @@ class SingleControllerTest extends TestCase
             'commentable_id' => $post->id,
         ])->make()->toArray();
 
-        //$this->withoutExceptionHandling();
         //send post request to single.comment
-        $response = $this->actingAs($user)->post(
-            route('single.comment',$post->id),
-            ['text' => $data['text']]
-        );
+        $response = $this
+            ->actingAs($user)
+            ->withHeaders([
+                'HTTP_X-Requested-with' => 'XMLHttpRequest'
+            ])
+            ->postJson(
+                route('single.comment', $post->id),
+                ['text' => $data['text']]
+            );
         //If we use redirection in the controller, we expect a 302 status code
-        //$response->assertOk();
-        $response->assertRedirect(route('single',$post->id));
+        $response
+            ->assertOk()
+            ->assertJson([
+                'created' => true
+            ]);
         $this->assertDatabaseHas('comments', $data);
     }
 
@@ -67,15 +74,20 @@ class SingleControllerTest extends TestCase
         //for ignore user_id
         unset($data['user_id']);
 
-       // $this->withoutExceptionHandling();
+        // $this->withoutExceptionHandling();
         //send post request to single.comment
-        $response = $this->post(
-            route('single.comment', $post->id),
-            ['text' => $data['text']]
-        );
+        $response = $this
+            ->withHeaders([
+                'HTTP_X-Requested-with' => 'XMLHttpRequest'
+            ])
+            ->postJson(
+                route('single.comment', $post->id),
+                ['text' => $data['text']]
+            );
         //If we use redirection in the controller, we expect a 302 status code
         //$response->assertOk();
-        $response->assertRedirect(route('login'));
+        // $response->assertRedirect(route('login'));
+        $response->assertUnauthorized();
         $this->assertDatabaseMissing('comments', $data);
     }
 }
