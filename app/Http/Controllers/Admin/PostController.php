@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
@@ -32,7 +33,18 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //request data(user_id,title,description,image,tags)
+
+        $post=Auth::user()->posts()->create([
+            'title'=>$request->input('title'),
+            'description'=>$request->input('description'),
+            'image'=>$request->input('image'),
+        ]);
+
+        $post->tags()->attach($request->input('tags'));
+
+       return redirect(route('post.index'))
+           ->with('message','new post has been created');
     }
 
     /**

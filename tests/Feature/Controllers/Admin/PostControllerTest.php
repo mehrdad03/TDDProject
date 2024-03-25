@@ -12,6 +12,8 @@ class PostControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected $middlewares = ['web', 'admin'];
+
     public function test_index_method()
     {
         Post::factory()->count(100)->create();
@@ -68,4 +70,40 @@ class PostControllerTest extends TestCase
             request()->route()->middleware()
         );
     }
+
+    public function test_store_method()
+    {
+        $user = User::factory()
+            ->admin()
+            ->create();
+
+        $data = Post::factory()
+            ->state(['user_id' => $user->id])
+            ->make()
+            ->toArray();
+
+        $tags = Tag::factory()->count(rand(1, 9))->create();
+
+        $this->actingAs($user)
+            ->post(
+                route('post.store'),
+                array_merge(
+                    ['tags' => $tags->pluck('id')->toArray()], $data),
+            )
+            ->assertSessionHas('message', 'new post has been created')
+            ->assertRedirect(route('post.index'));
+
+        $this->assertDatabaseHas('posts', $data);
+
+        $this->assertEquals(
+            $tags->pluck('id')->toArray(),
+            Post::query()->where($data)->first()->tags()->pluck('id')->toArray()
+        );
+
+        $this->assertEquals(
+            $this->middlewares,
+            request()->route()->middleware()
+        );
+    }
+
 }
