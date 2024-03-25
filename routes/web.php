@@ -5,16 +5,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SingleController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+
+Auth::routes();
 
 Route::get('/', [HomeController::class,'index'])->name('home');
 Route::get('/single/{post}', [SingleController::class,'index'])->name('single');
@@ -22,9 +14,8 @@ Route::post('/single/{post}/comment', [SingleController::class,'comment'])
     ->middleware('auth:web')
     ->name('single.comment');
 
-Auth::routes();
 
-Route::prefix('admin')->group(function (){
+Route::prefix('admin')->middleware('admin')->group(function (){
     Route::resource('post',PostController::class)->except(['show']);
 });
 
