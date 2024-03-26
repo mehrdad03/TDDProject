@@ -69,7 +69,19 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        //
+        //request data(title,description,images,tags)
+
+
+        $post->update([
+            'title'=>$request->input('title'),
+            'description'=>$request->input('description'),
+            'image'=>$request->input('image'),
+        ]);
+
+        $post->tags()->sync($request->input('tags'));
+
+        return redirect(route('post.index'))
+            ->with('message','The post has been updated');
     }
 
     /**
