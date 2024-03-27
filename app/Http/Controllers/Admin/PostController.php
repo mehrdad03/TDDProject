@@ -37,16 +37,16 @@ class PostController extends Controller
 
         //request data(user_id,title,description,image,tags)
 
-        $post=Auth::user()->posts()->create([
-            'title'=>$request->input('title'),
-            'description'=>$request->input('description'),
-            'image'=>$request->input('image'),
+        $post = Auth::user()->posts()->create([
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+            'image' => $request->input('image'),
         ]);
 
         $post->tags()->attach($request->input('tags'));
 
-       return redirect(route('post.index'))
-           ->with('message','new post has been created');
+        return redirect(route('post.index'))
+            ->with('message', 'new post has been created');
     }
 
     /**
@@ -63,7 +63,7 @@ class PostController extends Controller
     public function edit(Post $post)
     {
         $tags = Tag::query()->latest()->get();
-        return view('admin.post.edit', compact('tags','post'));
+        return view('admin.post.edit', compact('tags', 'post'));
     }
 
     /**
@@ -74,15 +74,15 @@ class PostController extends Controller
         //request data(title,description,images,tags)
 
         $post->update([
-            'title'=>$request->input('title'),
-            'description'=>$request->input('description'),
-            'image'=>$request->input('image'),
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+            'image' => $request->input('image'),
         ]);
 
         $post->tags()->sync($request->input('tags'));
 
         return redirect(route('post.index'))
-            ->with('message','The post has been updated');
+            ->with('message', 'The post has been updated');
     }
 
     /**
@@ -90,6 +90,14 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        $post->tags()->detach();
+
+        $post->comments()->delete();
+
+        $post->delete();
+
+        return redirect(route('post.index'))
+            ->with('message', 'the post has been deleted');
+
     }
 }

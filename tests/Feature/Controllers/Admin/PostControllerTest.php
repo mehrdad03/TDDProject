@@ -231,15 +231,45 @@ class PostControllerTest extends TestCase
         $errors = [
             'tags.0' => 'The selected tags.0 is invalid.',
         ];
+
         //store method
         $this->actingAs($user)
             ->post(route('post.store'), $data)
             ->assertSessionHasErrors($errors);
 
+        //fixed bug in y-21-18:34
+
         //update method
         $this->actingAs($user)
             ->patch(route('post.update', Post::factory()->create()->id), $data)
             ->assertSessionHasErrors($errors);
+    }
+
+    public function test_destroy_method()
+    {
+        $post = Post::factory()
+            ->hasTags(5)
+            ->hasComments()
+            ->create();
+        $comment = $post->comments()->first();
+
+        $this
+            ->actingAs(User::factory()->admin()->create())
+            ->delete(route('post.destroy', $post->id))
+            ->assertSessionHasAll(['message' => 'the post has been deleted'])
+            ->assertRedirect(route('post.index'));
+        $this
+            ->assertNotSoftDeleted($post)
+            ->assertNotSoftDeleted($comment)
+            ->assertEmpty($post->tags);
+
+        $this
+            ->assertEquals(
+            $this->middlewares,
+            request()->route()->middleware()
+        );
+
+
     }
 
 }
